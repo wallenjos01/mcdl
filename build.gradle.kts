@@ -16,6 +16,7 @@ configurations.create("shade").setExtendsFrom(listOf(configurations.getByName("i
 
 repositories {
     mavenCentral()
+    maven("https://maven.wallentines.org/")
     maven("https://libraries.minecraft.net/")
     mavenLocal()
 }
