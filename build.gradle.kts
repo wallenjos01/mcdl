@@ -22,7 +22,8 @@ repositories {
 
 dependencies {
 
-    implementation("org.wallentines:midnightcfg:1.0-SNAPSHOT")
+    implementation("org.wallentines:midnightcfg-api:2.0.0-SNAPSHOT")
+    implementation("org.wallentines:midnightcfg-codec-json:2.0.0-SNAPSHOT")
 
     implementation("org.apache.logging.log4j:log4j-api:2.20.0")
     implementation("org.apache.logging.log4j:log4j:2.20.0")
