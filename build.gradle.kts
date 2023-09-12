@@ -26,9 +26,8 @@ dependencies {
     implementation("org.wallentines:midnightcfg-api:2.0.0-SNAPSHOT")
     implementation("org.wallentines:midnightcfg-codec-json:2.0.0-SNAPSHOT")
 
-    implementation("org.apache.logging.log4j:log4j-api:2.20.0")
-    implementation("org.apache.logging.log4j:log4j:2.20.0")
-    implementation("org.apache.logging.log4j:log4j-core:2.20.0")
+    implementation("org.slf4j:slf4j-api:2.0.9")
+    implementation("org.slf4j:slf4j-simple:2.0.9")
 
     testImplementation(platform("org.junit:junit-bom:5.9.2"))
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
