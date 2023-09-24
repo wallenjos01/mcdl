@@ -44,6 +44,10 @@ public class DownloadUtil {
 
             outputStream.close();
 
+            if(!output.setExecutable(true)) {
+                LOGGER.warn("Unable to set executable bit on downloaded file " + output.getName() + "!");
+            }
+
             return true;
 
         } catch (IOException ex) {
