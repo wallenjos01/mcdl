@@ -51,7 +51,10 @@ public class JarUtil {
         } catch (IOException | InterruptedException ex) {
 
             File parent = jarfile.getParentFile();
-            if(parent != null && parent.isDirectory()) for(File f : parent.listFiles()) {
+            LOGGER.warn("JAR Parent file: " + parent.getAbsolutePath());
+            LOGGER.warn("Files in directory: ");
+
+            if(parent.isDirectory()) for(File f : parent.listFiles()) {
                 LOGGER.warn(" - " + f.getAbsolutePath());
             }
 
