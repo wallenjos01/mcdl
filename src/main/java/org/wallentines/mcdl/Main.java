@@ -16,7 +16,6 @@ public class Main {
                 .addFlag("acceptEula", 'e')
                 .addFlag("skipFirstLaunch", 's')
                 .addFlag("generateScripts", 'g')
-                .addFlag("")
                 // Fabric
                 .addOption("fabricInstallerVersion", "latest")
                 .addOption("fabricInstallerJarName", "fabric-installer.jar")
@@ -27,7 +26,10 @@ public class Main {
                 // Paper
                 .addOption("paperBuild", "latest")
                 // Velocity
-                .addOption("velocityBuild", "latest");
+                .addOption("velocityBuild", "latest")
+                // Custom
+                .addOption("customJarPath")
+                .addOption("customJarUrl");
 
         ArgumentParser.ParseResult result = parser.parse(args);
         if(result.isError()) {

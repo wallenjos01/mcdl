@@ -108,7 +108,7 @@ public class FileUtil {
         }
 
         if(!out.exists() && !out.mkdirs()) {
-            LOGGER.error("Unable to create working directory!");
+            LOGGER.error("Unable to create working directory! (" + out.getAbsolutePath() + ")");
         }
 
         return out;
