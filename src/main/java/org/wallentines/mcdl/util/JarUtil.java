@@ -22,6 +22,8 @@ public class JarUtil {
 
     public static Task.Result executeJarFile(String javaCmd, File jarfile, File workingDir, String[] args, String[] jvmArgs) {
 
+        jarfile = jarfile.getAbsoluteFile();
+
         if(javaCmd.equals("native")) {
             return executeJarFileNative(jarfile, args);
         }
@@ -51,11 +53,14 @@ public class JarUtil {
         } catch (IOException | InterruptedException ex) {
 
             File parent = jarfile.getParentFile();
-            LOGGER.warn("JAR Parent file: " + parent.getAbsolutePath());
-            LOGGER.warn("Files in directory: ");
 
-            if(parent.isDirectory()) for(File f : parent.listFiles()) {
-                LOGGER.warn(" - " + f.getAbsolutePath());
+            if (parent != null) {
+                LOGGER.warn("JAR Parent file: " + parent.getAbsolutePath());
+                LOGGER.warn("Files in directory: ");
+
+                if (parent.isDirectory()) for (File f : parent.listFiles()) {
+                    LOGGER.warn(" - " + f.getAbsolutePath());
+                }
             }
 
             LOGGER.error("Unable to execute command " + String.join(" ", builder.command()) + "!");
