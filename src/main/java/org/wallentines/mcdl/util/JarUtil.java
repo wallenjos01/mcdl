@@ -1,5 +1,7 @@
 package org.wallentines.mcdl.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wallentines.mcdl.Task;
 
 import java.io.File;
@@ -14,6 +16,9 @@ import java.util.List;
 import java.util.jar.JarFile;
 
 public class JarUtil {
+
+
+    private static final Logger LOGGER = LoggerFactory.getLogger("JarUtil");
 
     public static Task.Result executeJarFile(String javaCmd, File jarfile, File workingDir, String[] args, String[] jvmArgs) {
 
@@ -44,6 +49,7 @@ public class JarUtil {
         try {
             builder.start().waitFor();
         } catch (IOException | InterruptedException ex) {
+            LOGGER.error("Unable to execute command " + String.join(" ", builder.command()) + "!");
             return Task.Result.error("Unable to execute " + jarfile.getPath() + "! " + ex.getMessage());
         }
 
@@ -65,13 +71,13 @@ public class JarUtil {
             } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException |
                      InvocationTargetException ex) {
 
-                ex.printStackTrace();
+                LOGGER.error("An error occurred while loading a jar file! ", ex);
                 return Task.Result.error("Unable to find entry point in file " + jarfile.getAbsolutePath() + "! " + ex.getMessage());
             }
 
         } catch (IOException ex) {
 
-            ex.printStackTrace();
+            LOGGER.error("An error occurred while loading a jar file! ", ex);
             return Task.Result.error("Unable to find jarfile " + jarfile.getAbsolutePath() + "! " + ex.getMessage());
         }
 
