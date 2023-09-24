@@ -22,15 +22,14 @@ public class JarUtil {
 
     public static Task.Result executeJarFile(String javaCmd, File jarfile, File workingDir, String[] args, String[] jvmArgs) {
 
-        jarfile = jarfile.getAbsoluteFile();
-
         if(javaCmd.equals("native")) {
             return executeJarFileNative(jarfile, args);
         }
 
-        if(workingDir != null) {
-            jarfile = workingDir.toPath().toAbsolutePath().relativize(jarfile.toPath().toAbsolutePath()).toFile();
+        if(workingDir == null) {
+            workingDir = new File(System.getProperty("user.dir"));
         }
+
 
         List<String> command = new ArrayList<>();
         command.add(javaCmd);
@@ -38,15 +37,13 @@ public class JarUtil {
             command.addAll(Arrays.asList(jvmArgs));
         }
         command.add("-jar");
-        command.add(jarfile.getPath());
+        command.add(jarfile.getAbsolutePath());
         if(args != null) {
             command.addAll(Arrays.asList(args));
         }
 
         ProcessBuilder builder = new ProcessBuilder(command).inheritIO();
-        if(workingDir != null) {
-            builder.directory(workingDir);
-        }
+        builder.directory(workingDir);
 
         try {
             builder.start().waitFor();

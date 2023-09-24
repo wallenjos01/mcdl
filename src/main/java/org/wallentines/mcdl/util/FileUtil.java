@@ -1,5 +1,7 @@
 package org.wallentines.mcdl.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wallentines.mcdl.Task;
 import org.wallentines.mdcfg.ConfigSection;
 
@@ -8,12 +10,14 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class FileUtil {
+
+
+    private static final Logger LOGGER = LoggerFactory.getLogger("FileUtil");
 
     public static boolean verifyData(File f, String sha1) {
 
@@ -35,12 +39,12 @@ public class FileUtil {
 
         } catch (NoSuchAlgorithmException ex) {
 
-            System.out.println("SHA-1 Algorithm could not be loaded! File will not be verified!");
+            LOGGER.warn("SHA-1 Algorithm could not be loaded! File will not be verified!");
             return true;
 
         } catch (IOException ex) {
 
-            System.out.println("Unable to open file for verification!");
+            LOGGER.error("Unable to open file for verification!");
             return false;
         }
     }
@@ -98,13 +102,13 @@ public class FileUtil {
 
         String workingDir = sec.getOrDefault("serverWorkingDir", (String) null);
         if(workingDir == null) {
-            out = Paths.get("").toFile();
+            out = new File(System.getProperty("user.dir"));
         } else {
             out = new File(workingDir);
         }
 
         if(!out.exists() && !out.mkdirs()) {
-            return new File("");
+            LOGGER.error("Unable to create working directory!");
         }
 
         return out;
