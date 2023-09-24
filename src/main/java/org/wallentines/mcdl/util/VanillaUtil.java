@@ -140,6 +140,11 @@ public class VanillaUtil {
             jar = new File(jar.getParent(), "fabric-server-launch.jar");
         }
 
+        if(!jar.exists()) {
+            queue.getLogger().warn("Unable to find launch jar! First launch skipped!");
+            return Task.Result.success();
+        }
+
         return JarUtil.executeJarFile(java, jar, workingDir, new String[] { "nogui" }, jvmArgs);
     };
 }

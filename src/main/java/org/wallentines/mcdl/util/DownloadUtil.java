@@ -1,5 +1,7 @@
 package org.wallentines.mcdl.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wallentines.mdcfg.ConfigObject;
 import org.wallentines.mdcfg.codec.JSONCodec;
 
@@ -9,16 +11,20 @@ import java.net.URLConnection;
 
 public class DownloadUtil {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger("DownloadUtil");
+
     public static ConfigObject downloadJSON(String url) {
 
         try {
             URL actualUrl = new URL(url);
+            LOGGER.info("Downloading JSON from " + actualUrl);
+
             URLConnection conn = actualUrl.openConnection();
 
-            return JSONCodec.loadConfig(conn.getInputStream());
+            return JSONCodec.loadConfig(new BufferedInputStream(conn.getInputStream()));
 
         } catch (IOException ex) {
-            ex.printStackTrace();
+            LOGGER.error("An error occurred while downloading a JSON file!", ex);
             return null;
         }
     }
@@ -42,7 +48,7 @@ public class DownloadUtil {
 
         } catch (IOException ex) {
 
-            ex.printStackTrace();
+            LOGGER.error("An error occurred while downloading a file!", ex);
             return false;
         }
 
