@@ -34,9 +34,14 @@ public class TaskQueue {
 
         for(Task t : prefab.getTasks()) {
             Task.Result res = t.run(this);
-            if(res.isError()) {
+            if (res.isError()) {
                 logger.error(res.getErrorMessage());
                 return;
+            }
+            try {
+                Thread.sleep(1000L);
+            } catch (InterruptedException ex) {
+                // Ignore
             }
         }
         logger.info("Installation completed successfully!");
