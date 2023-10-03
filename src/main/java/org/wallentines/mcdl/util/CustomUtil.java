@@ -10,8 +10,8 @@ public class CustomUtil {
     public static final Task COPY_CUSTOM_JAR = queue -> {
 
         ConfigSection config = queue.getConfig();
-        String location = config.getString("customJarPath");
-        String url = config.getString("customJarUrl");
+        String location = config.getOrDefault("customJarPath", (String) null);
+        String url = config.getOrDefault("customJarUrl", (String) null);
         File out = new File(config.getString("jarName"));
 
         if(location != null) {
