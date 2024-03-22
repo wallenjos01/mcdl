@@ -1,5 +1,7 @@
 package org.wallentines.mcdl.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wallentines.mcdl.MinecraftVersion;
 import org.wallentines.mcdl.Task;
 import org.wallentines.mdcfg.ConfigSection;
@@ -23,6 +25,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 public class FabricUtil {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger("FabricUtil");
     private static final String FABRIC_INSTALLER_URL = "https://maven.fabricmc.net/net/fabricmc/fabric-installer/%s/fabric-installer-%s.jar";
 
     public static Task.Result downloadFabricInstaller(String version, File output) {
@@ -54,7 +57,7 @@ public class FabricUtil {
 
         } catch (IOException ex) {
 
-            ex.printStackTrace();
+            LOGGER.warn("An IOExecption occurred while reading fabric-server-launcher", ex);
             return Task.Result.error("Unable to configure Fabric server launcher!");
         }
 
@@ -76,8 +79,8 @@ public class FabricUtil {
             return handler.latestVersion;
 
         } catch (IOException | ParserConfigurationException | SAXException ex) {
-            ex.printStackTrace();
-            return "0.11.2";
+            LOGGER.warn("An Exception occurred while finding the latest Fabric version! Defaulting to 1.0.0", ex);
+            return "1.0.0";
         }
 
     }

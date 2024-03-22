@@ -48,19 +48,6 @@ public class JarUtil {
         try {
             builder.start().waitFor();
         } catch (IOException | InterruptedException ex) {
-
-            File parent = jarfile.getParentFile();
-
-            if (parent != null) {
-                LOGGER.warn("JAR Parent file: " + parent.getAbsolutePath());
-                LOGGER.warn("Files in directory: ");
-
-                if (parent.isDirectory()) for (File f : parent.listFiles()) {
-                    LOGGER.warn(" - " + f.getAbsolutePath());
-                }
-            }
-
-            LOGGER.error("Unable to execute command " + String.join(" ", builder.command()) + "!");
             return Task.Result.error("Unable to execute " + jarfile.getPath() + "! " + ex.getMessage());
         }
 
