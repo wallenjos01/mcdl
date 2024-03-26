@@ -105,6 +105,7 @@ public class VanillaUtil {
 
         ConfigSection config = queue.getConfig();
 
+        // EULA
         if(config.getBoolean("acceptEula")) {
 
             queue.getLogger().info("Accepting EULA...");
@@ -117,6 +118,7 @@ public class VanillaUtil {
             }
         }
 
+        // Load server.properties
         Properties props = new Properties();
         File properties = new File(FileUtil.getWorkingDir(queue.getConfig()), "server.properties");
         if(properties.isFile()) {
@@ -127,6 +129,8 @@ public class VanillaUtil {
             }
         }
 
+
+        // Port
         if (config.has("port")) {
             try {
                 int port = Integer.parseInt(config.getString("port"));
@@ -140,6 +144,7 @@ public class VanillaUtil {
         }
 
 
+        // Save server.properties
         try(FileOutputStream os = new FileOutputStream(properties)) {
             props.store(os, "");
         } catch (IOException ex) {

@@ -2,6 +2,7 @@ package org.wallentines.mcdl.util;
 
 import org.jetbrains.annotations.Nullable;
 import org.wallentines.mcdl.Task;
+import org.wallentines.mdcfg.ConfigSection;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -38,12 +39,51 @@ public class MavenUtil {
     }
 
     public static Task.Result downloadArtifact(String repo, ArtifactSpec spec, File output) {
-        String actualUrl = spec.getArtifactPath(repo);
+        String path = spec.getArtifactPath();
+        if(path == null) {
+            return Task.Result.error("Unable to download artifact with missing version!");
+        }
+        String actualUrl = repo + "/" + path;
+
         if(!DownloadUtil.downloadBytes(actualUrl, output)) {
-            return Task.Result.error("Unable to download Fabric installer!");
+            return Task.Result.error("Unable to download Maven artifact!");
         }
         return Task.Result.success();
     }
+
+    public static final Task DOWNLOAD_FABRIC = (queue) -> {
+
+        ConfigSection config = queue.getConfig();
+        if(!queue.getConfig().has("mavenRepo") || !queue.getConfig().has("mavenArtifact")) {
+            return Task.Result.error("Missing maven repo and/or artifact!");
+        }
+
+        String repo = config.getString("mavenRepo");
+        String artifact = config.getString("mavenArtifact");
+
+        String version = config.getString("version");
+        String jarName = config.getString("jarName");
+
+        try {
+            ArtifactSpec spec = ArtifactSpec.parse(artifact);
+
+            if(version != null) {
+                spec = spec.withVersion(version);
+            } else if(spec.version == null) {
+                version = getLatestVersion(repo, spec);
+                if(version == null) {
+                    return Task.Result.error("Unable to determine maven version!");
+                }
+                spec = spec.withVersion(version);
+            }
+
+            return downloadArtifact(repo, spec, new File(jarName));
+
+        } catch (ParseException ex) {
+
+            return Task.Result.error("Unable to parse maven artifact!");
+        }
+    };
 
 
     public static class ArtifactSpec {
@@ -69,12 +109,19 @@ public class MavenUtil {
             return version;
         }
 
-        public String getArtifactPath(String version) {
+        public String getArtifactPath() {
+            if(version == null) {
+                return null;
+            }
             return namespace.replace(".", "/") + "/%s/%s/%s-%s.jar".formatted(id, version, id, version);
         }
 
         public String getMetadataPath() {
             return namespace.replace(".", "/") + "/" + id + "/maven-metadata.xml";
+        }
+
+        public ArtifactSpec withVersion(String version) {
+            return new ArtifactSpec(namespace, id, version);
         }
 
         public static ArtifactSpec parse(String input) throws ParseException {

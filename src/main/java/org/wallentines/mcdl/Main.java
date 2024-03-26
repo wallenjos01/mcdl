@@ -28,6 +28,9 @@ public class Main {
                 .addOption("paperBuild", "latest")
                 // Velocity
                 .addOption("velocityBuild", "latest")
+                // Maven
+                .addOption("mavenRepo")
+                .addOption("mavenArtifact")
                 // Custom
                 .addOption("customJarPath")
                 .addOption("customJarUrl");
