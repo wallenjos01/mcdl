@@ -1,36 +1,38 @@
 plugins {
     id("java")
     id("application")
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    alias(libs.plugins.shadow)
 }
 
-group = "org.wallentines"
-version = "1.0-SNAPSHOT"
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    withSourcesJar()
+}
 
 application.mainClass.set("org.wallentines.mcdl.Main")
 
-java.sourceCompatibility = JavaVersion.VERSION_11
-java.targetCompatibility = JavaVersion.VERSION_11
+java.sourceCompatibility = JavaVersion.VERSION_17
+java.targetCompatibility = JavaVersion.VERSION_17
 
 configurations.create("shade").setExtendsFrom(listOf(configurations.getByName("implementation")))
 
 repositories {
     mavenCentral()
-    maven("https://maven.wallentines.org/")
+    maven("https://maven.wallentines.org/releases")
     maven("https://libraries.minecraft.net/")
     mavenLocal()
 }
 
 dependencies {
 
-    implementation("org.wallentines:midnightcfg-api:2.0.0-SNAPSHOT")
-    implementation("org.wallentines:midnightcfg-codec-json:2.0.0-SNAPSHOT")
+    implementation(libs.midnight.cfg)
+    implementation(libs.midnight.cfg.json)
+    implementation(libs.slf4j.api)
+    implementation(libs.slf4j.simple)
+    compileOnly(libs.jetbrains.annotations)
 
-    implementation("org.slf4j:slf4j-api:2.0.9")
-    implementation("org.slf4j:slf4j-simple:2.0.9")
-
-    testImplementation(platform("org.junit:junit-bom:5.9.2"))
-    testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
+    testImplementation(platform(libs.junit.bom))
+    testImplementation(libs.junit.jupiter)
 }
 
 tasks.test {

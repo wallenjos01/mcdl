@@ -1,0 +1,23 @@
+[versions]
+junit = "5.10.1"
+mdcfg = "2.2.0"
+mdlib = "1.6.0"
+slf4j = "2.0.11"
+jbr-anno = "24.0.1"
+auth = "6.0.52"
+shadow = "8.1.1"
+
+[libraries]
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+midnight-cfg = { module = "org.wallentines:midnightcfg-api", version.ref="mdcfg" }
+midnight-cfg-json = { module = "org.wallentines:midnightcfg-codec-json", version.ref="mdcfg" }
+midnight-cfg-nbt = { module = "org.wallentines:midnightcfg-codec-nbt", version.ref="mdcfg" }
+midnight-lib = { module = "org.wallentines:midnightlib", version.ref="mdlib" }
+mojang-authlib = { module = "com.mojang:authlib", version.ref="auth" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
+jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref="jbr-anno" }
+
+[plugins]
+shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow" }

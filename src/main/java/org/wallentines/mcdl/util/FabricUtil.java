@@ -12,29 +12,20 @@ import org.xml.sax.helpers.DefaultHandler;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Stack;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 public class FabricUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("FabricUtil");
     private static final String FABRIC_INSTALLER_URL = "https://maven.fabricmc.net/net/fabricmc/fabric-installer/%s/fabric-installer-%s.jar";
+    private static final String FABRIC_REPO = "https://maven.fabricmc.net/";
+    private static final String FABRIC_NAMESPACE = "net.fabricmc";
+    private static final String FABRIC_INSTALLER_ID = "fabric-installer";
 
     public static Task.Result downloadFabricInstaller(String version, File output) {
-
-        String actualUrl = String.format(FABRIC_INSTALLER_URL, version, version);
-        if(!DownloadUtil.downloadBytes(actualUrl, output)) {
-            return Task.Result.error("Unable to download Fabric installer!");
-        }
-        return Task.Result.success();
+        return MavenUtil.downloadArtifact(FABRIC_REPO, new MavenUtil.ArtifactSpec(FABRIC_NAMESPACE, FABRIC_INSTALLER_ID, version), output);
     }
 
     public static Task.Result installFabric(File installerJar, File serverJar, MinecraftVersion version, String javaCommand) {
@@ -66,23 +57,12 @@ public class FabricUtil {
 
     public static String getLatestInstallerVersion() {
 
-        String url = "https://maven.fabricmc.net/net/fabricmc/fabric-installer/maven-metadata.xml";
-
-        try {
-            URL actualUrl = new URL(url);
-            URLConnection conn = actualUrl.openConnection();
-
-            SAXParser parser = SAXParserFactory.newDefaultInstance().newSAXParser();
-            LatestVersionHandler handler = new LatestVersionHandler();
-            parser.parse(conn.getInputStream(), handler);
-
-            return handler.latestVersion;
-
-        } catch (IOException | ParserConfigurationException | SAXException ex) {
-            LOGGER.warn("An Exception occurred while finding the latest Fabric version! Defaulting to 1.0.0", ex);
+        String out = MavenUtil.getLatestVersion(FABRIC_REPO, new MavenUtil.ArtifactSpec(FABRIC_NAMESPACE, FABRIC_INSTALLER_ID, null));
+        if(out == null) {
+            LOGGER.warn("Unable to determine latest Fabric installer version! Defaulting to 1.0.0");
             return "1.0.0";
         }
-
+        return out;
     }
 
     public static final Task INSTALL_FABRIC = queue -> {
@@ -127,34 +107,6 @@ public class FabricUtil {
         return Task.Result.success();
     };
 
-    private static class LatestVersionHandler extends DefaultHandler {
-        private String latestVersion = null;
-        private final Stack<String> tags = new Stack<>();
-        private final StringBuilder currentValue = new StringBuilder();
 
-        @Override
-        public void startElement(String uri, String localName, String qName, Attributes attributes) {
-
-            tags.push(qName);
-            currentValue.setLength(0);
-        }
-
-        @Override
-        public void endElement(String uri, String localName, String qName) throws SAXException {
-
-            String tag = tags.pop();
-            if(!tag.equals(qName)) throw new SAXException("Corrupted stack!");
-
-            if(tag.equals("latest") && tags.peek().equals("versioning") && tags.size() == 2) {
-                latestVersion = currentValue.toString();
-            }
-        }
-
-        @Override
-        public void characters(char[] ch, int start, int length) {
-
-            currentValue.append(ch, start, length);
-        }
-    }
 
 }
