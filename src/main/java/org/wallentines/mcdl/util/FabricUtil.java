@@ -19,7 +19,6 @@ import java.util.List;
 public class FabricUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("FabricUtil");
-    private static final String FABRIC_INSTALLER_URL = "https://maven.fabricmc.net/net/fabricmc/fabric-installer/%s/fabric-installer-%s.jar";
     private static final String FABRIC_REPO = "https://maven.fabricmc.net/";
     private static final String FABRIC_NAMESPACE = "net.fabricmc";
     private static final String FABRIC_INSTALLER_ID = "fabric-installer";
