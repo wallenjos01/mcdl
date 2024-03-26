@@ -13,6 +13,7 @@ public class Main {
                 .addOption("version", 'v', "latest")
                 .addOption("jarName", "minecraft_server.jar")
                 .addOption("serverWorkingDir")
+                .addOption("port", 'p')
                 .addFlag("acceptEula", 'e')
                 .addFlag("skipFirstLaunch", 's')
                 .addFlag("generateScripts", 'g')

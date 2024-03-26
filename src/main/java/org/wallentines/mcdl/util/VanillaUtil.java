@@ -6,9 +6,12 @@ import org.wallentines.mdcfg.ConfigObject;
 import org.wallentines.mdcfg.ConfigSection;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+import java.util.Properties;
 
 import static org.wallentines.mcdl.util.DownloadUtil.downloadJSON;
 import static org.wallentines.mcdl.util.DownloadUtil.downloadBytes;
@@ -112,6 +115,35 @@ public class VanillaUtil {
             } catch (IOException ex) {
                 return Task.Result.error("Unable to accept eula! " + ex.getMessage());
             }
+        }
+
+        Properties props = new Properties();
+        File properties = new File(FileUtil.getWorkingDir(queue.getConfig()), "server.properties");
+        if(properties.isFile()) {
+            try(FileInputStream fis = new FileInputStream(properties)) {
+                props.load(fis);
+            } catch (IOException ex) {
+                return Task.Result.error("Unable to load server.properties!" + ex.getMessage());
+            }
+        }
+
+        if (config.has("port")) {
+            try {
+                int port = Integer.parseInt(config.getString("port"));
+                if(port < 1 || port > Short.MAX_VALUE) {
+                    return Task.Result.error("Server port out of range [1,65535]!");
+                }
+                props.setProperty("server-port", Objects.toString(port));
+            } catch (NumberFormatException ex) {
+                return Task.Result.error("Unable to parse port number!");
+            }
+        }
+
+
+        try(FileOutputStream os = new FileOutputStream(properties)) {
+            props.store(os, "");
+        } catch (IOException ex) {
+            return Task.Result.error("Unable to write server.properties! " + ex.getMessage());
         }
 
         return Task.Result.success();
