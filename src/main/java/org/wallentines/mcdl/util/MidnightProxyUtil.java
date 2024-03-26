@@ -1,24 +1,31 @@
 package org.wallentines.mcdl.util;
 
-import org.wallentines.mcdl.MinecraftVersion;
 import org.wallentines.mcdl.Task;
+import org.wallentines.mdcfg.ConfigObject;
 import org.wallentines.mdcfg.ConfigSection;
 
 import java.io.File;
 
 public class MidnightProxyUtil {
 
-
-    private static final String REPO = "https://maven.wallentines.org/releases";
-    private static final String NAMESPACE = "org.wallentines";
-    private static final String INSTALLER_ID = "midnightproxy-proxy";
+    private static final String LATEST_API = "https://api.github.com/repos/wallenjos01/MidnightProxy/releases/latest";
+    private static final String ARTIFACT_URL = "https://api.github.com/repos/wallenjos01/MidnightProxy/releases/download/v%s/midnightproxy-proxy-%s.jar";
 
     public static Task.Result downloadMidnightProxy(String version, File output) {
-        return MavenUtil.downloadArtifact(REPO, new MavenUtil.ArtifactSpec(NAMESPACE, INSTALLER_ID, version), output);
+        if(!DownloadUtil.downloadBytes(ARTIFACT_URL.formatted(version, version), output)) {
+            return Task.Result.error("Unable to download Maven artifact!");
+        }
+        return Task.Result.success();
     }
     public static String getLatestProxyVersion() {
+        ConfigObject obj = DownloadUtil.downloadJSON(LATEST_API);
+        if(obj == null || !obj.isSection()) return null;
 
-        return MavenUtil.getLatestVersion(REPO, new MavenUtil.ArtifactSpec(NAMESPACE, INSTALLER_ID, null));
+        String tagName = obj.asSection().getOrDefault("tag_name", (String) null);
+        if(tagName != null) {
+            return tagName.substring(1); // Cut off the 'v'
+        }
+        return null;
     }
 
     public static final Task DOWNLOAD_MIDNIGHTPROXY = queue -> {
