@@ -51,7 +51,7 @@ public class MavenUtil {
         return Task.Result.success();
     }
 
-    public static final Task DOWNLOAD_FABRIC = (queue) -> {
+    public static final Task DOWNLOAD_MAVEN = (queue) -> {
 
         ConfigSection config = queue.getConfig();
         if(!queue.getConfig().has("mavenRepo") || !queue.getConfig().has("mavenArtifact")) {
