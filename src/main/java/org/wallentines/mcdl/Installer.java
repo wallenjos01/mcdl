@@ -10,7 +10,7 @@ public enum Installer {
     SPIGOT("spigot", new TaskList.Builder().then(SpigotUtils.BUILD_SPIGOT).then(VanillaUtil.FIRST_LAUNCH).then(VanillaUtil.CONFIGURE).then(FileUtil.GENERATE_LAUNCH_SCRIPTS).build()),
     PAPER("paper", new TaskList.Builder().then(PaperUtils.DOWNLOAD_PAPER).then(VanillaUtil.FIRST_LAUNCH).then(VanillaUtil.CONFIGURE).then(FileUtil.GENERATE_LAUNCH_SCRIPTS).build()),
     VELOCITY("velocity", new TaskList.Builder().then(PaperUtils.DOWNLOAD_VELOCITY).then(FileUtil.GENERATE_LAUNCH_SCRIPTS).build()),
-    MIDNIGHT_PROXY("midnightproxy", new TaskList.Builder().then(MidnightProxyUtil.DOWNLOAD_MIDNIGHTPROXY).then(FileUtil.GENERATE_LAUNCH_SCRIPTS).build()),
+    MIDNIGHT_PROXY("midnightproxy", new TaskList.Builder().then(MidnightProxyUtil.DOWNLOAD).then(MidnightProxyUtil.CONFIGURE).then(FileUtil.GENERATE_LAUNCH_SCRIPTS).build()),
     MAVEN("maven", new TaskList.Builder().then(MavenUtil.DOWNLOAD_FABRIC).then(FileUtil.GENERATE_LAUNCH_SCRIPTS).build()),
     CUSTOM("custom", new TaskList.Builder().then(CustomUtil.COPY_CUSTOM_JAR).then(VanillaUtil.FIRST_LAUNCH).then(VanillaUtil.CONFIGURE).then(FileUtil.GENERATE_LAUNCH_SCRIPTS).build());
 
