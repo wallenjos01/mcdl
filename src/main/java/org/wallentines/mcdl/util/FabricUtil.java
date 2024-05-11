@@ -5,9 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.wallentines.mcdl.MinecraftVersion;
 import org.wallentines.mcdl.Task;
 import org.wallentines.mdcfg.ConfigSection;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 import java.io.File;
 import java.io.FileOutputStream;

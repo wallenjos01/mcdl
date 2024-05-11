@@ -13,8 +13,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Properties;
 
-import static org.wallentines.mcdl.util.DownloadUtil.downloadJSON;
 import static org.wallentines.mcdl.util.DownloadUtil.downloadBytes;
+import static org.wallentines.mcdl.util.DownloadUtil.downloadJSON;
 
 public class VanillaUtil {
 
@@ -118,37 +118,38 @@ public class VanillaUtil {
             }
         }
 
-        // Load server.properties
-        Properties props = new Properties();
-        File properties = new File(FileUtil.getWorkingDir(queue.getConfig()), "server.properties");
-        if(properties.isFile()) {
-            try(FileInputStream fis = new FileInputStream(properties)) {
-                props.load(fis);
-            } catch (IOException ex) {
-                return Task.Result.error("Unable to load server.properties!" + ex.getMessage());
-            }
-        }
-
-
         // Port
         if (config.has("port")) {
+
+            int port;
             try {
-                int port = Integer.parseInt(config.getString("port"));
+                port = Integer.parseInt(config.getString("port"));
                 if(port < 1 || port > Short.MAX_VALUE) {
                     return Task.Result.error("Server port out of range [1,65535]!");
                 }
-                props.setProperty("server-port", Objects.toString(port));
             } catch (NumberFormatException ex) {
                 return Task.Result.error("Unable to parse port number!");
             }
-        }
 
+            // Load server.properties
+            Properties props = new Properties();
+            File properties = new File(FileUtil.getWorkingDir(queue.getConfig()), "server.properties");
+            if(properties.isFile()) {
+                try(FileInputStream fis = new FileInputStream(properties)) {
+                    props.load(fis);
+                } catch (IOException ex) {
+                    return Task.Result.error("Unable to load server.properties!" + ex.getMessage());
+                }
+            }
 
-        // Save server.properties
-        try(FileOutputStream os = new FileOutputStream(properties)) {
-            props.store(os, "");
-        } catch (IOException ex) {
-            return Task.Result.error("Unable to write server.properties! " + ex.getMessage());
+            props.setProperty("server-port", Objects.toString(port));
+
+            // Save server.properties
+            try(FileOutputStream os = new FileOutputStream(properties)) {
+                props.store(os, "");
+            } catch (IOException ex) {
+                return Task.Result.error("Unable to write server.properties! " + ex.getMessage());
+            }
         }
 
         return Task.Result.success();
