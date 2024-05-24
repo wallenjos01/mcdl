@@ -1,5 +1,7 @@
 package org.wallentines.mcdl.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wallentines.mcdl.MinecraftVersion;
 import org.wallentines.mcdl.Task;
 import org.wallentines.mdcfg.ConfigObject;
@@ -19,13 +21,14 @@ import static org.wallentines.mcdl.util.DownloadUtil.downloadJSON;
 public class VanillaUtil {
 
     private static final String VERSION_MANIFEST_URL = "https://launchermeta.mojang.com/mc/game/version_manifest.json";
+    private static final Logger LOGGER = LoggerFactory.getLogger(VanillaUtil.class);
 
 
     public static MinecraftVersion downloadVersion(String version) {
 
         ConfigObject obj = downloadJSON(VERSION_MANIFEST_URL);
         if(obj == null) {
-            System.out.println("Unable to download version manifest!");
+            LOGGER.error("Unable to download version manifest!");
             return null;
         }
 
@@ -49,7 +52,7 @@ public class VanillaUtil {
             }
         }
 
-        System.out.println("Unable to find requested Minecraft version " + version);
+        LOGGER.error("Unable to find requested Minecraft version {}", version);
         return null;
     }
 
@@ -57,7 +60,7 @@ public class VanillaUtil {
 
         ConfigObject definition = downloadJSON(version.getDefinitionUrl());
         if(definition == null) {
-            System.out.println("Unable to download version definition for version " + version);
+            LOGGER.error("Unable to download version definition for version {}", version);
             return false;
         }
 
@@ -72,7 +75,7 @@ public class VanillaUtil {
         String serverUrl = serverDl.getString("url");
 
         if(!downloadBytes(serverUrl, output)) {
-            System.out.println("Unable to download server jar!");
+            LOGGER.error("Unable to download server jar!");
             return false;
         }
 

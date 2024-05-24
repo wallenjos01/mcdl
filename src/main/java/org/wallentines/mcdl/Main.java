@@ -1,8 +1,13 @@
 package org.wallentines.mcdl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wallentines.mdcfg.ConfigSection;
 
 public class Main {
+
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
 
@@ -37,7 +42,7 @@ public class Main {
 
         ArgumentParser.ParseResult result = parser.parse(args);
         if(result.isError()) {
-            System.out.println(result.getError());
+            LOGGER.error(result.getError());
             return;
         }
 
@@ -46,7 +51,7 @@ public class Main {
         String type = sec.getString("type");
         Installer installer = Installer.byId(type);
         if(installer == null) {
-            System.out.println("Unknown installer type " + type);
+            LOGGER.error("Unknown installer type {}", type);
             return;
         }
 
