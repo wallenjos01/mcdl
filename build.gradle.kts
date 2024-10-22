@@ -1,35 +1,14 @@
 plugins {
-    id("java")
-    id("application")
-    alias(libs.plugins.shadow)
-}
-
-java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
-    withSourcesJar()
+    id("build.application")
+    id("build.library")
+    id("build.shadow")
 }
 
 application.mainClass.set("org.wallentines.mcdl.Main")
 
-java.sourceCompatibility = JavaVersion.VERSION_17
-java.targetCompatibility = JavaVersion.VERSION_17
-
 repositories {
     mavenCentral()
-    maven("https://maven.wallentines.org/releases")
     maven("https://libraries.minecraft.net/")
-}
-
-configurations.shadow {
-    extendsFrom(configurations.implementation.get())
-}
-
-tasks.jar {
-    archiveClassifier.set("partial")
-}
-
-tasks.shadowJar {
-    archiveClassifier.set("")
 }
 
 dependencies {
@@ -38,37 +17,9 @@ dependencies {
     implementation(libs.midnight.cfg.json)
     implementation(libs.slf4j.api)
     implementation(libs.slf4j.simple)
-    compileOnly(libs.jetbrains.annotations)
 
-    testImplementation(platform(libs.junit.bom))
-    testImplementation(libs.junit.jupiter)
-}
-
-tasks.test {
-    useJUnitPlatform()
-}
-
-java {
-    manifest {
-        attributes(Pair("Main-Class", application.mainClass))
-    }
-}
-
-tasks.withType<JavaExec> {
-
-    workingDir = File("run")
-}
-
-tasks.register<Copy>("copyFinalJar") {
-
-    dependsOn(tasks.shadowJar)
-    from(tasks.shadowJar.get().archiveFile)
-
-    var output = "build/output"
-    if(project.hasProperty("outputDir")) {
-        output = project.properties["outputDir"] as String
-    }
-
-    into(output)
-    rename("(.*)\\.jar", "${rootProject.name}.jar")
+    shadow(libs.midnight.cfg)
+    shadow(libs.midnight.cfg.json)
+    shadow(libs.slf4j.api)
+    shadow(libs.slf4j.simple)
 }
