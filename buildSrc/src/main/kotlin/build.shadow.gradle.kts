@@ -3,6 +3,7 @@ import buildlogic.Utils
 plugins {
     id("build.common")
     id("com.github.johnrengelman.shadow")
+    id("maven-publish")
 }
 
 tasks {
@@ -21,9 +22,4 @@ tasks.shadowJar {
 
 tasks.jar {
     archiveClassifier.set("partial")
-}
-
-val javaComponent = components["java"] as AdhocComponentWithVariants
-javaComponent.withVariantsFromConfiguration(configurations["shadowRuntimeElements"]) {
-    skip()
 }
