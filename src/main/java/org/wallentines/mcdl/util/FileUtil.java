@@ -128,6 +128,21 @@ public class FileUtil {
         return out.toString();
     }
 
+    private static FileOutputStream createOutputStream(boolean windows, File workingDir) throws IOException {
+
+        FileOutputStream out;
+        if(windows) {
+            out = new FileOutputStream("start.bat");
+            out.write("@echo off\n".getBytes(StandardCharsets.UTF_8));
+        } else {
+            out = new FileOutputStream("start.sh");
+            out.write("#!/bin/sh\n".getBytes(StandardCharsets.UTF_8));
+        }
+
+        out.write(("cd " + workingDir.getAbsolutePath() + "\n").getBytes(StandardCharsets.UTF_8));
+        return out;
+    }
+
     public static final Task GENERATE_LAUNCH_SCRIPTS = queue -> {
 
         if(!queue.getConfig().getBoolean("generateScripts")) return Task.Result.success();
@@ -142,43 +157,25 @@ public class FileUtil {
             cmd.append(" -Dfabric.gameJarPath=").append(jar.getAbsolutePath());
             jar = new File(jar.getParent(), "fabric-server-launch.jar");
         }
+
+        boolean windows = System.getProperty("os.name").startsWith("Windows");
+
+        if(windows) {
+            cmd.append(" %*");
+        } else {
+            cmd.append(" $@");
+        }
+
         cmd.append(" -jar ").append(workingDir.toPath().toAbsolutePath().relativize(jar.toPath().toAbsolutePath())).append(" nogui");
 
-        if(System.getProperty("os.name").startsWith("Windows")) {
+        try(FileOutputStream fos = createOutputStream(windows, workingDir)) {
+            fos.write(cmd.toString().getBytes(StandardCharsets.UTF_8));
+        } catch(IOException ex) {
+            return Task.Result.error("Unable to write launch scripts!");
+        }
 
-            queue.getLogger().info("Generating launch scripts for Windows...");
-
-            // Windows
-            File batch = new File("start.bat");
-            try(FileOutputStream fos = new FileOutputStream(batch)) {
-
-                fos.write("@echo off\n".getBytes(StandardCharsets.UTF_8));
-                fos.write(("cd " + workingDir.getAbsolutePath() + "\n").getBytes(StandardCharsets.UTF_8));
-                fos.write(cmd.toString().getBytes(StandardCharsets.UTF_8));
-
-            } catch (IOException ex) {
-                return Task.Result.error("Unable to write launch scripts!");
-            }
-        } else {
-
-            queue.getLogger().info("Generating launch scripts for Linux...");
-
-            // Unix
-            File shell = new File("start.sh");
-            try(FileOutputStream fos = new FileOutputStream(shell)) {
-
-                fos.write("#!/bin/sh\n".getBytes(StandardCharsets.UTF_8));
-                fos.write(("cd " + workingDir.getAbsolutePath() + "\n").getBytes(StandardCharsets.UTF_8));
-                fos.write(cmd.toString().getBytes(StandardCharsets.UTF_8));
-
-                fos.close();
-                if(!shell.setExecutable(true)) {
-                    queue.getLogger().warn("Unable to mark " + shell.getName() + " as executable!");
-                }
-
-            } catch (IOException ex) {
-                return Task.Result.error("Unable to write launch scripts!");
-            }
+        if(!windows && !new File("start.sh").setExecutable(true)) {
+            return Task.Result.error("Unable to make launch script executable!");
         }
 
         return Task.Result.success();

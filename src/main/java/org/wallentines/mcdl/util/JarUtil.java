@@ -1,11 +1,13 @@
 package org.wallentines.mcdl.util;
 
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wallentines.mcdl.Task;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -21,6 +23,10 @@ public class JarUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger("JarUtil");
 
     public static Task.Result executeJarFile(String javaCmd, File jarfile, File workingDir, String[] args, String[] jvmArgs) {
+        return executeJarFile(javaCmd, jarfile, workingDir, args, jvmArgs, null);
+    }
+
+    public static Task.Result executeJarFile(String javaCmd, File jarfile, File workingDir, String[] args, String[] jvmArgs, @Nullable String stdin) {
 
         if(javaCmd.equals("native")) {
             return executeJarFileNative(jarfile, args);
@@ -42,11 +48,20 @@ public class JarUtil {
             command.addAll(Arrays.asList(args));
         }
 
-        ProcessBuilder builder = new ProcessBuilder(command).inheritIO();
+        ProcessBuilder builder = new ProcessBuilder(command)
+            .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+            .redirectError(ProcessBuilder.Redirect.INHERIT);
         builder.directory(workingDir);
 
         try {
-            builder.start().waitFor();
+            Process process = builder.start();
+            if(stdin != null) {
+                OutputStream os = process.getOutputStream();
+                os.write(stdin.getBytes());
+                os.write('\n');
+                os.flush();
+            }
+            process.waitFor();
         } catch (IOException | InterruptedException ex) {
             return Task.Result.error("Unable to execute " + jarfile.getPath() + "! " + ex.getMessage());
         }

@@ -163,13 +163,7 @@ public class VanillaUtil {
         if(queue.getConfig().getBoolean("skipFirstLaunch")) {
             return Task.Result.success();
         }
-
         File workingDir = FileUtil.getWorkingDir(queue.getConfig());
-        File eula = new File(workingDir, "eula.txt");
-        if(eula.exists() && !eula.delete()) {
-            queue.getLogger().warn("Unable to delete eula.txt! First launch skipped!");
-            return Task.Result.success();
-        }
 
         queue.getLogger().info("Performing first launch...");
         String java = queue.getConfig().getString("javaCommand");
@@ -186,6 +180,6 @@ public class VanillaUtil {
             return Task.Result.success();
         }
 
-        return JarUtil.executeJarFile(java, jar, workingDir, new String[] { "nogui" }, jvmArgs);
+        return JarUtil.executeJarFile(java, jar, workingDir, new String[] { "nogui" }, jvmArgs, queue.getConfig().getString("stopCommand"));
     };
 }

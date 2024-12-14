@@ -22,6 +22,7 @@ public class Main {
                 .addFlag("acceptEula", 'e')
                 .addFlag("skipFirstLaunch", 's')
                 .addFlag("generateScripts", 'g')
+                .addOption("stopCommand", "stop")
                 // Fabric
                 .addOption("fabricInstallerVersion", "latest")
                 .addOption("fabricInstallerJarName", "fabric-installer.jar")
